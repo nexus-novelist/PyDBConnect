@@ -7,7 +7,8 @@ Made in python using FastAPI.
 This library currently does not offer password authentication, so it might be insecure.
 
 ## DICTIONARY
- - Cluster: The json file containing the data of a project
+ - Collection: The json file containing the data of a project
+ - Document: Tables containing data inside a collection
 
 ## HOW TO USE
  - Clone this repo onto a server

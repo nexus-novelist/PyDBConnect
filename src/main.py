@@ -14,10 +14,22 @@ app = FastAPI()
 def is_online():
     return {'online': True}
 
-@app.get('/get/{project}/{cluster}')
-def get_cluster(project: str, cluster: str):
+@app.get('/get/{project}/{collection}')
+def get_collection(project: str, collection: str):
     project_dir = os.getcwd() + '/../data/' + project + '/'
-    if os.path.exists(project_dir) and os.path.exists(project_dir + cluster + '.json'):
-        return json.load(open(project_dir + cluster + '.json'))
+    if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
+        return json.load(open(project_dir + collection + '.json'))
         
-    return {'Data': None, 'ErrorMsg': 'Project or Cluster not found!', 'ErrorCode': 404}
+    return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+
+@app.get('/get/{project}/{collection}/{document}')
+def get_document(project: str, collection: str, document: str):
+    project_dir = os.getcwd() + '/../data/' + project + '/'
+    if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
+        data = json.load(open(project_dir + collection + '.json'))
+        if document in data:
+            return data[document]
+        else:
+            return {'Data': None, 'ErrorMsg': 'Document not found!', 'ErrorCode': 404}
+    else:
+        return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
