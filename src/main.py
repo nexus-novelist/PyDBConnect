@@ -33,3 +33,7 @@ def get_document(project: str, collection: str, document: str):
             return {'Data': None, 'ErrorMsg': 'Document not found!', 'ErrorCode': 404}
     else:
         return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+    
+@app.post('/create-document/{project}/{collection}/{document_id}')
+def create_document(project: str, collection: str, document_id: str, document: dict):
+    ...
