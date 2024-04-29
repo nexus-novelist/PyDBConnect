@@ -1,6 +1,5 @@
 # PyDBConnect
-## ABOUT
-PyDBConnect is a private library that provides database services.\
+PyDBConnect is a private library that provides Non-Sql database services.\
 Made in python using FastAPI.
 
 ## WARNING
@@ -14,7 +13,7 @@ This is also my first attempt at a WebAPI library, so feel free to create pull r
 ## HOW TO USE
  - Clone this repo onto a server
  - Create a new Project by adding a folder to the 'data' folder OR use /bin/extra/createBaseProject.
- - run /bin/run.* to start WebAPI server.
+ - run /bin/run.* to start PyDBConnect server.
 
  - Port forward
  
