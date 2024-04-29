@@ -1,7 +1,14 @@
 import os
 import json
 
+from dotenv import load_dotenv
+
 from fastapi import FastAPI
+
+from encryption import *
+from utils import *
+
+load_dotenv()
 
 app = FastAPI()
 #Types of APIs
@@ -12,14 +19,14 @@ app = FastAPI()
 
 @app.get('/')
 def is_online():
-    return {'online': True}
+    return {'Online': True, 'ReturnMsg': "PyDBConnect Database is online!", 'ReturnCode': 200}
 
 # Returns collections of specified project
 @app.get('/get/{project}')
 def get_project(project: str):
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir):
-        return os.listdir(project_dir)
+        return get_collections(project_dir)
     else:
         return {'Data': None, 'ErrorMsg': 'Project not found!', 'ErrorCode': 404}
 
@@ -81,7 +88,7 @@ def update_document(project: str, collection: str, document_id: str, document: d
         return current_collection[document_id]
     else:
         return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
-
+    
 @app.delete('/delete-document/{project}/{collection}/{document_id}')
 def delete_document(project: str, collection: str, document_id: str):
     project_dir = os.getcwd() + '/../data/' + project + '/'
@@ -99,3 +106,27 @@ def delete_document(project: str, collection: str, document_id: str):
         return {'ReturnMsg': 'Document deleted successfully!', 'ReturnCode': 200}
     else:
         return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+
+@app.post('/create-collection/{project}/{collection}')
+def create_collection(project: str, collection: str):
+    project_dir = os.getcwd() + '/../data/' + project + '/'
+    if os.path.exists(project_dir):
+        if os.path.exists(project_dir + collection + '.json'):
+            return {'Data': None, 'ErrorMsg': 'Collection already exists!', 'ErrorCode': 409}
+        
+        with open(project_dir + collection + '.json', 'w') as file:
+            json.dump({}, file, indent=4)
+        
+        return {'ReturnMsg': 'Collection created successfully!', 'ReturnCode': 200}
+    else:
+        return {'Data': None, 'ErrorMsg': 'Project not found!', 'ErrorCode': 404}
+
+@app.delete('/delete-collection/{project}/{collection}')
+def delete_collection(project: str, collection: str):
+    project_dir = os.getcwd() + '/../data/' + project + '/'
+    if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
+        os.remove(project_dir + collection + '.json')
+        
+        return {'ReturnMsg': 'Collection deleted successfully!', 'ReturnCode': 200}
+    else:
+        return {'Data': None, 'ErrorMsg': 'Project or collection not found!', 'ErrorCode': 404}

@@ -1,9 +1,10 @@
 cd ../../data/
-echo Running this script will generate a basic project 
+echo Running this script will generate a basic project
 set /p projectName=Project Name: 
 mkdir %projectName%
 
 cd %projectName%
+
 (
 echo {
 echo     "1": [{

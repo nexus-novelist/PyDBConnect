@@ -12,9 +12,12 @@ This is also my first attempt at a WebAPI library, so feel free to create pull r
  - Document: Tables containing data inside a collection
 
 ## HOW TO USE
+THE FOLLOWING SCRIPTS ASSUME YOU ARE INSIDE OF THEIR  FOLDERS WHEN RUNNING THEM.
  - Clone this repo onto a server
- - Create a new Project by adding a folder to the 'data' folder OR use /bin/extra/createBaseProject.
+ - run /bin/setup.* to init PyDBConnect.
+ - use /bin/extra/createBaseProject to create a new project.
  - run /bin/run.* to start PyDBConnect server.
 
- - Port forward
+ - Port forward for public use
+ - Enjoy!
  
