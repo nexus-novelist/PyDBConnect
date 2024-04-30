@@ -3,12 +3,12 @@ import json
 
 from dotenv import load_dotenv
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 
 from encryption import *
 from utils import *
 
-load_dotenv()
+load_dotenv('../.env')
 
 app = FastAPI()
 #Types of APIs
@@ -19,7 +19,7 @@ app = FastAPI()
 
 @app.get('/')
 def is_online():
-    return {'Online': True, 'ReturnMsg': "PyDBConnect Database is online!", 'ReturnCode': 200}
+    raise HTTPException(status_code=status.HTTP_200_OK, detail='PyDBConnect Database Server is online!')
 
 # Returns collections of specified project
 @app.get('/get/{project}')
@@ -28,7 +28,7 @@ def get_project(project: str):
     if os.path.exists(project_dir):
         return get_collections(project_dir)
     else:
-        return {'Data': None, 'ErrorMsg': 'Project not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project not found!')
 
 #returns specified collection of project.
 @app.get('/get/{project}/{collection}')
@@ -37,7 +37,7 @@ def get_collection(project: str, collection: str):
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         return json.load(open(project_dir + collection + '.json'))
         
-    return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
 #returns specified document of collection.
 @app.get('/get/{project}/{collection}/{document}')
@@ -48,9 +48,9 @@ def get_document(project: str, collection: str, document: str):
         if document in data:
             return data[document]
         else:
-            return {'Data': None, 'ErrorMsg': 'Document not found!', 'ErrorCode': 404}
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Document not found in collection!')
     else:
-        return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
     
 #creates a new document in specified collection
 @app.post('/create-document/{project}/{collection}/{document_id}')
@@ -60,7 +60,7 @@ def create_document(project: str, collection: str, document_id: str, document: d
         current_collection = json.load(open(project_dir + collection + '.json'))
         
         if document_id in current_collection:
-            return {'Data': None, 'ErrorMsg': 'Document with the same document_id already exists in collection!', 'ErrorCode': 409}
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='specified document_id not found in collection!')
 
         current_collection[document_id] = document
 
@@ -69,7 +69,7 @@ def create_document(project: str, collection: str, document_id: str, document: d
 
         return current_collection[document_id]
     else:
-        return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
 @app.put('/update-document/{project}/{collection}/{document_id}')
 def update_document(project: str, collection: str, document_id: str, document: dict):
@@ -78,7 +78,7 @@ def update_document(project: str, collection: str, document_id: str, document: d
         current_collection = json.load(open(project_dir + collection + '.json'))
 
         if not document_id in current_collection:
-            return {'Data': None, 'ErrorMsg': 'specified document_id not found in collection!', 'ErrorCode': 404}
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='specified document_id not found in collection!')
 
         current_collection[document_id] = document
 
@@ -87,7 +87,7 @@ def update_document(project: str, collection: str, document_id: str, document: d
 
         return current_collection[document_id]
     else:
-        return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
     
 @app.delete('/delete-document/{project}/{collection}/{document_id}')
 def delete_document(project: str, collection: str, document_id: str):
@@ -96,37 +96,31 @@ def delete_document(project: str, collection: str, document_id: str):
         current_collection = json.load(open(project_dir + collection + '.json'))
 
         if not document_id in current_collection:
-            return {'Data': None, 'ErrorMsg': 'specified document_id not found in collection!', 'ErrorCode': 404}
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='specified document_id not found in collection!')
 
         del current_collection[document_id]
 
         with open(project_dir + collection + '.json', 'w') as file:
             json.dump(current_collection, file, indent=4)
-
-        return {'ReturnMsg': 'Document deleted successfully!', 'ReturnCode': 200}
     else:
-        return {'Data': None, 'ErrorMsg': 'Project or Collection not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
 @app.post('/create-collection/{project}/{collection}')
 def create_collection(project: str, collection: str):
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir):
         if os.path.exists(project_dir + collection + '.json'):
-            return {'Data': None, 'ErrorMsg': 'Collection already exists!', 'ErrorCode': 409}
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Collection already exists!')
         
         with open(project_dir + collection + '.json', 'w') as file:
             json.dump({}, file, indent=4)
-        
-        return {'ReturnMsg': 'Collection created successfully!', 'ReturnCode': 200}
     else:
-        return {'Data': None, 'ErrorMsg': 'Project not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project not found!')
 
 @app.delete('/delete-collection/{project}/{collection}')
 def delete_collection(project: str, collection: str):
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         os.remove(project_dir + collection + '.json')
-        
-        return {'ReturnMsg': 'Collection deleted successfully!', 'ReturnCode': 200}
     else:
-        return {'Data': None, 'ErrorMsg': 'Project or collection not found!', 'ErrorCode': 404}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
