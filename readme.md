@@ -4,7 +4,6 @@ PyDBConnect is a private library that provides Non-Sql database services.\
 Made in python using FastAPI.
 
 ## WARNING
-This library currently does not offer password authentication, so it might be insecure.\
 This is also my first attempt at a WebAPI library, so feel free to create pull requests and help me out.
 
 ## DICTIONARY
