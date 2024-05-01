@@ -1,2 +1,3 @@
 pip install -r ../requirements.txt
-python setup.py
+set /p password=Authentication password: 
+python setup.py %password%

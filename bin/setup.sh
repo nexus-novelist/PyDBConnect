@@ -1,2 +1,3 @@
 pip install -r ../requirements.txt
-python setup.py
+read -p "Authentication Password: " password
+python setup.py $password

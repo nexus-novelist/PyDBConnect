@@ -28,7 +28,11 @@ def decrypt(filename):
         iv = f.read(16)
         decrypt_data = f.read()
 
+    #cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+    #original = unpad(cipher.decrypt(decrypt_data), AES.block_size)
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
-    original = unpad(cipher.decrypt(decrypt_data), AES.block_size)
+    decrypted_password = cipher.decrypt(decrypt_data)
+    unpadded_password = unpad(decrypted_password, AES.block_size)
+    password = unpadded_password.decode('utf-8')
 
-    return original
+    return password

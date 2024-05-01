@@ -11,19 +11,21 @@ from utils import *
 load_dotenv('../.env')
 
 app = FastAPI()
-#Types of APIs
-#GET: returns information
-#POST: creates something new
-#PUT: updates something
-#DELETE: deletes something
+
+def check_password(input):
+    if decrypt('../auth.bin') == input:
+        return True
+    return False
 
 @app.get('/')
 def is_online():
     raise HTTPException(status_code=status.HTTP_200_OK, detail='PyDBConnect Database Server is online!')
 
 # Returns collections of specified project
-@app.get('/get/{project}')
-def get_project(project: str):
+@app.get('/get/{project}/{password}')
+def get_project(project: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir):
         return get_collections(project_dir)
@@ -31,8 +33,10 @@ def get_project(project: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project not found!')
 
 #returns specified collection of project.
-@app.get('/get/{project}/{collection}')
-def get_collection(project: str, collection: str):
+@app.get('/get/{project}/{collection}/{password}')
+def get_collection(project: str, collection: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         return json.load(open(project_dir + collection + '.json'))
@@ -40,8 +44,10 @@ def get_collection(project: str, collection: str):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
 #returns specified document of collection.
-@app.get('/get/{project}/{collection}/{document}')
-def get_document(project: str, collection: str, document: str):
+@app.get('/get/{project}/{collection}/{document}/{password}')
+def get_document(project: str, collection: str, document: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         data = json.load(open(project_dir + collection + '.json'))
@@ -53,8 +59,10 @@ def get_document(project: str, collection: str, document: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
     
 #creates a new document in specified collection
-@app.post('/create-document/{project}/{collection}/{document_id}')
-def create_document(project: str, collection: str, document_id: str, document: dict):
+@app.post('/create-document/{project}/{collection}/{document_id}/{password}')
+def create_document(project: str, collection: str, document_id: str, document: dict, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         current_collection = json.load(open(project_dir + collection + '.json'))
@@ -71,8 +79,10 @@ def create_document(project: str, collection: str, document_id: str, document: d
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
-@app.put('/update-document/{project}/{collection}/{document_id}')
-def update_document(project: str, collection: str, document_id: str, document: dict):
+@app.put('/update-document/{project}/{collection}/{document_id}/{password}')
+def update_document(project: str, collection: str, document_id: str, document: dict, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         current_collection = json.load(open(project_dir + collection + '.json'))
@@ -89,8 +99,10 @@ def update_document(project: str, collection: str, document_id: str, document: d
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
     
-@app.delete('/delete-document/{project}/{collection}/{document_id}')
-def delete_document(project: str, collection: str, document_id: str):
+@app.delete('/delete-document/{project}/{collection}/{document_id}/{password}')
+def delete_document(project: str, collection: str, document_id: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         current_collection = json.load(open(project_dir + collection + '.json'))
@@ -105,8 +117,10 @@ def delete_document(project: str, collection: str, document_id: str):
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project or collection not found!')
 
-@app.post('/create-collection/{project}/{collection}')
-def create_collection(project: str, collection: str):
+@app.post('/create-collection/{project}/{collection}/{password}')
+def create_collection(project: str, collection: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir):
         if os.path.exists(project_dir + collection + '.json'):
@@ -117,8 +131,10 @@ def create_collection(project: str, collection: str):
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Project not found!')
 
-@app.delete('/delete-collection/{project}/{collection}')
-def delete_collection(project: str, collection: str):
+@app.delete('/delete-collection/{project}/{collection}/{password}')
+def delete_collection(project: str, collection: str, password: str):
+    if not check_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Incorrect password!")
     project_dir = os.getcwd() + '/../data/' + project + '/'
     if os.path.exists(project_dir) and os.path.exists(project_dir + collection + '.json'):
         os.remove(project_dir + collection + '.json')
