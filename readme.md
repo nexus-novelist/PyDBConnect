@@ -1,4 +1,5 @@
 # PyDBConnect
+## V1.5.0
 ![Logo](https://github.com/nexus-novelist/PyDBConnect/blob/master/assets/PyDBConnect.png?raw=true)
 PyDBConnect is a private library that provides Non-Sql database services.\
 Made in python using FastAPI.
