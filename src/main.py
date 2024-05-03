@@ -1,14 +1,19 @@
 import os
 import json
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from fastapi import FastAPI, HTTPException, status
 
 from encryption import *
 from utils import *
 
-load_dotenv('../.env')
+print(find_dotenv())
+#load_dotenv(find_dotenv())
+load_dotenv(os.path.abspath(os.getcwd() + os.sep + os.pardir + os.sep + '.env'))
+
+print(os.path.abspath(os.getcwd() + os.sep + os.pardir + os.sep + '.env'))
+os.path.abspath
 
 app = FastAPI()
 
