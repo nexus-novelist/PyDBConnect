@@ -1,3 +1,3 @@
 cd ../src
-uvicorn main:app --reload --port 7575
+uvicorn main:app --reload --host 0.0.0.0 --port 7575
 PAUSE
