@@ -120,8 +120,8 @@ def create_document(
 
         if document_id in current_collection:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="specified document_id not found in collection!",
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="specified document_id already exists!",
             )
 
         current_collection[document_id] = document
